@@ -22,4 +22,6 @@ public interface IGoodsService {
     void deleteGoods(Long spuId);
 
     void updateSaleable(Long spuId);
+
+    Spu querySpuById(Long spuId);
 }

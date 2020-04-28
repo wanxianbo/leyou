@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SpecificationService implements ISpecificationService {
@@ -138,5 +141,36 @@ public class SpecificationService implements ISpecificationService {
         if (count == 0) {
             throw new LyException(ExceptionEnum.UPDATE_ERROR);
         }
+    }
+
+    /**
+     * 查询规格参数组，及组内参数
+     * @param cid
+     * @return
+     */
+    @Override
+    public List<SpecGroup> queryGroupAndParamByCid(Long cid) {
+        //查询得到规格组
+        List<SpecGroup> specGroups = queryGroupByCid(cid);
+        /*//第一种方式：查询得到规格参数
+        List<SpecParam> specParams = querySpecParams(null, cid, null);
+        //创建一个map，存放key:groupId,value:对应的param
+        Map<Long, List<SpecParam>> map = new HashMap<>();
+        specParams.forEach(param -> {
+            if (!map.containsKey(param.getGroupId())) {
+                //map中没有groupId的值，就创建list
+                map.put(param.getGroupId(), new ArrayList<>());
+            }
+            map.get(param.getGroupId()).add(param);
+        });
+        specGroups.forEach(specGroup -> {
+            //将参数注入到相应的规格组内
+            specGroup.setParams(map.get(specGroup.getId()));
+        });*/
+        //第二种方式
+        specGroups.forEach(specGroup -> {
+            specGroup.setParams(querySpecParams(specGroup.getId(),null,null));
+        });
+        return specGroups;
     }
 }

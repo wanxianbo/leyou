@@ -22,4 +22,6 @@ public interface ISpecificationService {
     void deleteSpecParams(Long pid);
 
     void updateSpecParams(SpecParam specParam);
+
+    List<SpecGroup> queryGroupAndParamByCid(Long cid);
 }

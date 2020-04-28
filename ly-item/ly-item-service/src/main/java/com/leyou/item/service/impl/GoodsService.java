@@ -234,6 +234,15 @@ public class GoodsService implements IGoodsService {
         }
     }
 
+    @Override
+    public Spu querySpuById(Long spuId) {
+        Spu spu = goodsMapper.selectByPrimaryKey(spuId);
+        if (spu == null) {
+            throw new LyException(ExceptionEnum.GOOD_NOT_FOUND);
+        }
+        return spu;
+    }
+
     private void saveSkuAndStock(Spu spu) {
         List<Stock> stockList = new ArrayList<>();
         spu.getSkus().forEach(sku -> {
