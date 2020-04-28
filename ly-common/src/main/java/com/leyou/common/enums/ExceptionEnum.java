@@ -14,6 +14,7 @@ public enum ExceptionEnum {
     BRAND_NOT_FOUND(404, "品牌没有找到"),
     SPEC_GROUP_NOT_FOUND(404, "商品规格组不存在"),
     SPEC_PARAMS_NOT_FOUND(404, "商品规格参数不存在"),
+    GOOD_NOT_FOUND(404,"商品不存在"),
     SPU_DETAIL_NOT_FOUND(404,"DETAIL不存在"),
     SKU_NOT_FOUND(404,"SKU不存在"),
     STOCK_NOT_FOUND(404,"STOCK库存不存在"),
