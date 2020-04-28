@@ -50,10 +50,11 @@ public class SpecificationService implements ISpecificationService {
      * @return
      */
     @Override
-    public List<SpecParam> querySpecParams(Long gid, Long cid, Boolean searching) {
+    public List<SpecParam> querySpecParams(Long gid, Long cid, Boolean generic,Boolean searching) {
         SpecParam param = new SpecParam();
         param.setGroupId(gid);
         param.setCid(cid);
+        param.setGeneric(generic);
         param.setSearching(searching);
         List<SpecParam> list = specParamMapper.select(param);
         if (CollectionUtils.isEmpty(list)) {
@@ -169,7 +170,7 @@ public class SpecificationService implements ISpecificationService {
         });*/
         //第二种方式
         specGroups.forEach(specGroup -> {
-            specGroup.setParams(querySpecParams(specGroup.getId(),null,null));
+            specGroup.setParams(querySpecParams(specGroup.getId(),null,null,null));
         });
         return specGroups;
     }

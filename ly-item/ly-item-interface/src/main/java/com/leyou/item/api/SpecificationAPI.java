@@ -29,6 +29,7 @@ public interface SpecificationAPI {
     List<SpecParam> querySpecParams(
             @RequestParam(name = "gid",required = false) Long gid,
             @RequestParam(name = "cid",required = false) Long cid,
+            @RequestParam(name = "generic",required = false) Boolean generic,
             @RequestParam(name = "searching",required = false) Boolean searching
     );
 }

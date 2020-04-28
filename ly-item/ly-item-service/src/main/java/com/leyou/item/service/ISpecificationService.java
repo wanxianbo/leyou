@@ -9,7 +9,7 @@ public interface ISpecificationService {
 
     List<SpecGroup> queryGroupByCid(Long cid);
 
-    List<SpecParam> querySpecParams(Long gid, Long cid, Boolean searching);
+    List<SpecParam> querySpecParams(Long gid, Long cid, Boolean generic,Boolean searching);
 
     void saveSpecGroup(SpecGroup specGroup);
 
