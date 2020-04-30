@@ -89,7 +89,7 @@ public class SearchService {
         });
 
         //查询规格参数名
-        List<SpecParam> params = specificationClient.querySpecParams(null, spu.getCid3(), true);
+        List<SpecParam> params = specificationClient.querySpecParams(null, spu.getCid3(), true,null);
         if (CollectionUtils.isEmpty(params)) {
             throw new LyException(ExceptionEnum.SPEC_PARAMS_NOT_FOUND);
         }
@@ -271,7 +271,7 @@ public class SearchService {
             //2.基于基本查询条件，聚合规格参数
             queryBuilder.withQuery(boolQueryBuilder);
             //3.查询规格参数
-            List<SpecParam> params = specificationClient.querySpecParams(null, cid, true);
+            List<SpecParam> params = specificationClient.querySpecParams(null, cid, true,null);
             //4.添加聚合
             params.forEach(param -> {
                 String name = param.getName();
@@ -341,5 +341,27 @@ public class SearchService {
             log.error("[分类服务异常]",e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * 创建索引
+     * @param id
+     */
+    public void createIndex(Long id) {
+        //查询spu
+        Spu spu = goodsClient.querySpuById(id);
+        //构建goods
+        Goods goods = goodsBuilder(spu);
+        //添加索引
+        goodsRepository.save(goods);
+    }
+
+    /**
+     * 删除所有
+     * @param id
+     */
+    public void deleteIndex(Long id) {
+        //删除索引
+        goodsRepository.deleteById(id);
     }
 }
