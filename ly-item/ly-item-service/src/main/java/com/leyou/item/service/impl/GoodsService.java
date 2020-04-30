@@ -9,7 +9,9 @@ import com.leyou.common.vo.PageResult;
 import com.leyou.item.mapper.*;
 import com.leyou.item.pojo.*;
 import com.leyou.item.service.IGoodsService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class GoodsService implements IGoodsService {
 
@@ -35,6 +38,8 @@ public class GoodsService implements IGoodsService {
     private SkuMapper skuMapper;
     @Autowired
     private StockMapper stockMapper;
+    @Autowired
+    private AmqpTemplate amqpTemplate;
     @Override
     public PageResult<Spu> querySpuVoByPage(Integer page, Integer rows, Boolean saleable, String key) {
         //分页
@@ -81,7 +86,7 @@ public class GoodsService implements IGoodsService {
             throw new LyException(ExceptionEnum.GOOD_SAVE_ERROR);
         }
         //3.向sku表插入数据
-        List<Sku> skus = spu.getSkus();
+        //List<Sku> skus = spu.getSkus();
         /*//创建一个集合，用来装stock的对象
         List<Stock> stocks = new ArrayList<>();
         for (Sku sku : skus) {
@@ -106,7 +111,19 @@ public class GoodsService implements IGoodsService {
         if (count != stocks.size()) {
             throw new LyException(ExceptionEnum.GOOD_SAVE_ERROR);
         }*/
+        //保存sku和stock信息
         saveSkuAndStock(spu);
+        //发送消息到mq
+        sendMessage(spu.getId(), "insert");
+    }
+
+    private void sendMessage(Long id, String type) {
+        //发送消息
+        try {
+            amqpTemplate.convertAndSend("item." + type, id);
+        } catch (Exception e) {
+            log.error("{}商品消息发送异常，商品id：{}", type, id, e);
+        }
     }
 
     @Override
@@ -175,6 +192,9 @@ public class GoodsService implements IGoodsService {
         spuDetailMapper.updateByPrimaryKeySelective(spuDetail);
         //5.新增sku和stock
         saveSkuAndStock(spu);
+
+        //发送消息到mq
+        sendMessage(spu.getId(),"update");
     }
 
     /**
@@ -212,6 +232,9 @@ public class GoodsService implements IGoodsService {
         if (count != 1) {
             throw new LyException(ExceptionEnum.DELETE_ERROR);
         }
+
+        //发送消息到mq
+        sendMessage(spuId,"delete");
     }
 
     /**

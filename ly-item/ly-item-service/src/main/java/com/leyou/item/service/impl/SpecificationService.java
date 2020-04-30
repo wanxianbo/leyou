@@ -154,7 +154,7 @@ public class SpecificationService implements ISpecificationService {
         //查询得到规格组
         List<SpecGroup> specGroups = queryGroupByCid(cid);
         /*//第一种方式：查询得到规格参数
-        List<SpecParam> specParams = querySpecParams(null, cid, null);
+        List<SpecParam> specParams = querySpecParams(null, cid, null,null);
         //创建一个map，存放key:groupId,value:对应的param
         Map<Long, List<SpecParam>> map = new HashMap<>();
         specParams.forEach(param -> {

@@ -11,15 +11,15 @@ import java.util.List;
 public interface IGoodsService {
     PageResult<Spu> querySpuVoByPage(Integer page, Integer rows, Boolean saleable, String key);
 
-    void saveGoods(Spu spu);
+    void saveGoods(Spu spu);//保存商品
 
     SpuDetail queryDetailById(Long spuId);
 
     List<Sku> querySkuBySpuId(Long id);
 
-    void updateGoods(Spu spu);
+    void updateGoods(Spu spu);//更新商品
 
-    void deleteGoods(Long spuId);
+    void deleteGoods(Long spuId);//删除商品
 
     void updateSaleable(Long spuId);
 

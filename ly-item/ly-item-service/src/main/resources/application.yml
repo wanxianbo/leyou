@@ -8,6 +8,19 @@ spring:
     url: jdbc:mysql://192.168.42.120:33306/yun6?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
     username: root
     password: root
+  rabbitmq:
+    host: 192.168.42.120
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+    template:
+      retry:
+        enabled: true
+        initial-interval: 10000ms
+        max-interval: 30000ms
+        multiplier: 2
+      exchange: ly.item.exchange
+    publisher-confirm-type: correlated
 eureka:
   client:
     service-url:
