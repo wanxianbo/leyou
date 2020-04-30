@@ -1,0 +1,24 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: goods-web
+  thymeleaf:
+    cache: false
+  main:
+    allow-bean-definition-overriding: true
+  rabbitmq:
+    host: 192.168.42.120
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+ly:
+  page:
+    destPath: E:\my_java\uploads\leyou
