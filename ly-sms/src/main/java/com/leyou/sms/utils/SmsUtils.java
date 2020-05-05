@@ -32,17 +32,14 @@ public class SmsUtils {
     static final String product = "Dysmsapi";//短信API产品名称（短信产品名固定，无需修改）
     static final String domain = "dysmsapi.aliyuncs.com";//短信API产品域名（接口地址固定，无需修改）
     //定义redis的key的值
-    private static final String KEY_PERFIX = "sms:phone:";
+    private static final String KEY_PREFIX = "sms:phone:";
 
     public SendSmsResponse sendsSms(String phoneNumber, String signName, String templateCode, String templateParam) {
         //给redis的key赋值
-        String key = KEY_PERFIX + phoneNumber;
+        String key = KEY_PREFIX + phoneNumber;
         //设置超时时间-可自行调整
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
-        //替换成你的AK
-        final String accessKeyId = "yourAccessKeyId";//你的accessKeyId,参考本文档步骤2
-        final String accessKeySecret = "yourAccessKeySecret";//你的accessKeySecret，参考本文档步骤2
         String lastTime = redisTemplate.opsForValue().get(key);
         if (StringUtils.isNotBlank(lastTime)) {
             Long last = Long.valueOf(lastTime);
@@ -52,7 +49,6 @@ public class SmsUtils {
                 return null;
             }
         }
-
         //初始化ascClient,暂时不支持多region（请勿修改）
         try {
             IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", prop.getAccessKeyId(),

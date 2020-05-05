@@ -24,7 +24,23 @@ zuul:
   routes:
     item-service: /item/**
     search-service: /search/**
+    user-service: /user/**
+    auth-service: /auth/**
     upload-service:
       serviceId: upload-service
       path: /upload/**
       strip-prefix: false
+  add-host-header: true
+  sensitive-headers:
+ly:
+  jwt:
+    pubKeyPath: E:\my_java\uploads\rsa\\rsa.pub # 公钥地址
+    cookieName: LY_TOKEN
+  filter:
+    allowPaths:
+      - /api/auth
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/code
+      - /api/item

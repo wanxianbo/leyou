@@ -16,6 +16,8 @@
         <module>ly-search</module>
         <module>ly-goods-web</module>
         <module>ly-sms</module>
+        <module>ly-user</module>
+        <module>ly-auth</module>
     </modules>
 
     <packaging>pom</packaging>
