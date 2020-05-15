@@ -26,6 +26,8 @@ zuul:
     search-service: /search/**
     user-service: /user/**
     auth-service: /auth/**
+    cart-service: /cart/**
+    order-service: /order/**
     upload-service:
       serviceId: upload-service
       path: /upload/**
@@ -44,3 +46,4 @@ ly:
       - /api/user/check
       - /api/user/code
       - /api/item
+      - /api/cart

@@ -17,6 +17,7 @@ public enum ExceptionEnum {
     SPU_DETAIL_NOT_FOUND(404,"DETAIL不存在"),
     SKU_NOT_FOUND(404,"SKU不存在"),
     STOCK_NOT_FOUND(404, "STOCK库存不存在"),
+    CART_NOT_FOUND(404,"购物车不存在"),
     INSERT_INTO_ERROR(500,"插入失败"),
     UPDATE_ERROR(500,"更新失败"),
     DELETE_ERROR(500,"删除失败"),
@@ -27,8 +28,17 @@ public enum ExceptionEnum {
     PRICE_CANNOT_BE_NULL(400,"价格不能为空!"),
     INVALID_USER_DATA_TYPE(400,"用户类型无效"),
     INVALID_USERNAME_PASSWORD(400,"用户名或密码错误"),
-    UNAUTHORIZED(403,"未授权")
-    ;
+    UNAUTHORIZED(403,"未授权"),
+    ORDER_CREATE_ERROR(500,"创建订单失败"),
+    ORDER_DETAIL_CREATE_ERROR(500,"创建订单详细失败"),
+    ORDER_STATUS_CREATE_ERROR(500,"创建订单状态失败"),
+    STOCK_NOT_ENOUGH(500,"库存不足"),
+    ORDER_NOT_FOUND(404, "订单不存在"),
+    ORDER_DETAIL_FOUND(404, "订单详情不存在"),
+    ORDER_STATUS_NOT_FOUND(404, "订单状态不存在"),
+    WX_PAY_ORDER_ERROR(500,"微信下单失败"),
+    ODER_STATUS_ERROR(400,"订单状态错误"),
+    UPDATE_ORDER_STATUS_ERROR(400,"更新订单状态错误");
     private int code;
     private String msg;
 }

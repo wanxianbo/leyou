@@ -3,6 +3,7 @@ package com.leyou.item.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.leyou.common.dto.CartDTO;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.vo.PageResult;
@@ -152,12 +153,13 @@ public class GoodsService implements IGoodsService {
 
         List<Long> skuIds = list.stream().map(s -> s.getId()).collect(Collectors.toList());
         //查询库存量-stock表
-        List<Stock> stockList = stockMapper.selectByIdList(skuIds);
+        loadStock(list,skuIds);
+        /*List<Stock> stockList = stockMapper.selectByIdList(skuIds);
         if (CollectionUtils.isEmpty(stockList)) {
             throw new LyException(ExceptionEnum.STOCK_NOT_FOUND);
         }
         Map<Long, Integer> stockMap = stockList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s.getStock()));
-        list.forEach(s -> s.setStock(stockMap.get(s.getId())));
+        list.forEach(s -> s.setStock(stockMap.get(s.getId())));*/
         return list;
     }
 
@@ -264,6 +266,50 @@ public class GoodsService implements IGoodsService {
             throw new LyException(ExceptionEnum.GOOD_NOT_FOUND);
         }
         return spu;
+    }
+
+    /**
+     * 根据skuIds查询sku
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<Sku> querySkuBySpuIds(List<Long> ids) {
+        List<Sku> skuList = skuMapper.selectByIdList(ids);
+        if (CollectionUtils.isEmpty(skuList)) {
+            throw new LyException(ExceptionEnum.SKU_NOT_FOUND);
+        }
+        //添加库存
+        //查询库存量-stock表
+        loadStock(skuList, ids);
+
+        return skuList;
+    }
+
+    /**
+     * 此方法有线程安全问题，我们才有乐观锁的策略
+     * 悲观锁的策略：分布锁的问题：zkeeper，redis setnx key
+     * @param carts
+     */
+    @Transactional
+    @Override
+    public void decreaseStock(List<CartDTO> carts) {
+        for (CartDTO cart : carts) {
+            //减库存
+            int count = stockMapper.decreaseStock(cart.getSkuId(), cart.getNum());
+            if (count != 1) {
+                throw new LyException(ExceptionEnum.STOCK_NOT_ENOUGH);
+            }
+        }
+    }
+
+    private void loadStock(List<Sku> skuList, List<Long> ids) {
+        List<Stock> stockList = stockMapper.selectByIdList(ids);
+        if (CollectionUtils.isEmpty(stockList)) {
+            throw new LyException(ExceptionEnum.STOCK_NOT_FOUND);
+        }
+        Map<Long, Integer> stockMap = stockList.stream().collect(Collectors.toMap(s -> s.getSkuId(), s -> s.getStock()));
+        skuList.forEach(s -> s.setStock(stockMap.get(s.getId())));
     }
 
     private void saveSkuAndStock(Spu spu) {

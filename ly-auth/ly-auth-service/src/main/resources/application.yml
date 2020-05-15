@@ -19,4 +19,4 @@ ly:
     priKeyPath: E:\my_java\uploads\rsa\\rsa.pri # 私钥地址
     expire: 30 # 过期时间,单位分钟
     cookieName: LY_TOKEN
-    cookieMaxAge: 30
+    cookieMaxAge: 1800
