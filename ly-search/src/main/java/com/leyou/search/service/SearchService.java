@@ -83,13 +83,13 @@ public class SearchService {
             Map<String, Object> skuMap = new HashMap<>();
             skuMap.put("id", sku.getId());
             skuMap.put("title", sku.getTitle());
-            skuMap.put("images", StringUtils.substringBefore(sku.getImages(),","));
+            skuMap.put("images", StringUtils.substringBefore(sku.getImages(), ","));
             skuMap.put("price", sku.getPrice());
             skuList.add(skuMap);
         });
 
         //查询规格参数名
-        List<SpecParam> params = specificationClient.querySpecParams(null, spu.getCid3(), true,null);
+        List<SpecParam> params = specificationClient.querySpecParams(null, spu.getCid3(), true, null);
         if (CollectionUtils.isEmpty(params)) {
             throw new LyException(ExceptionEnum.SPEC_PARAMS_NOT_FOUND);
         }
@@ -105,7 +105,7 @@ public class SearchService {
         //2.特有属性值
         Map<Long, List<String>> specialSpec = JsonUtils.nativeRead(
                 spuDetail.getSpecialSpec(), new TypeReference<Map<Long, List<String>>>() {
-        });
+                });
         //3.封装到map中
         Map<String, Object> specs = new HashMap<>();
         params.forEach(param -> {
@@ -152,6 +152,7 @@ public class SearchService {
 
     /**
      * 对数字参数分段
+     *
      * @param value
      * @param p
      * @return
@@ -165,16 +166,16 @@ public class SearchService {
             // 获取数值范围
             double begin = NumberUtils.toDouble(segs[0]);
             double end = Double.MAX_VALUE;
-            if(segs.length == 2){
+            if (segs.length == 2) {
                 end = NumberUtils.toDouble(segs[1]);
             }
             // 判断是否在范围内
-            if(val >= begin && val < end){
-                if(segs.length == 1){
+            if (val >= begin && val < end) {
+                if (segs.length == 1) {
                     result = segs[0] + p.getUnit() + "以上";
-                }else if(begin == 0){
+                } else if (begin == 0) {
                     result = segs[1] + p.getUnit() + "以下";
-                }else{
+                } else {
                     result = segment + p.getUnit();
                 }
                 break;
@@ -206,7 +207,7 @@ public class SearchService {
         queryBuilder.addAggregation(AggregationBuilders.terms(brandAggName).field("brandId"));
         //结果过滤，只要id，title，skus
         queryBuilder.withSourceFilter(
-                new FetchSourceFilter(new String[]{"id", "title", "skus","subTile"}, null));
+                new FetchSourceFilter(new String[]{"id", "title", "skus", "subTile"}, null));
         //搜索过滤
         queryBuilder.withQuery(boolQueryBuilder);
         //查询
@@ -224,16 +225,16 @@ public class SearchService {
         //解析聚合结果
         Aggregations aggs = aggregatedPage.getAggregations();
         // 分类聚合
-        List<Map<String,Object>> categories = parseCategoryAgg(aggs.get(categoryAggName));
+        List<Map<String, Object>> categories = parseCategoryAgg(aggs.get(categoryAggName));
         // 品牌聚合
         List<Brand> brands = parseBrandAgg(aggs.get(brandAggName));
         //根据商品分类个数判断是否需要聚合
-        List<Map<String,Object>> specs = null;
+        List<Map<String, Object>> specs = null;
         if (!CollectionUtils.isEmpty(categories) && categories.size() == 1) {
             // 如果商品分类只有一个才进行聚合，并根据分类与基本查询条件聚合
-            specs = parseParamAgg((Long) categories.get(0).get("cid"),boolQueryBuilder);
+            specs = parseParamAgg((Long) categories.get(0).get("cid"), boolQueryBuilder);
         }
-        return new SearchResult(total,totalPage,goodsList,categories,brands,specs);
+        return new SearchResult(total, totalPage, goodsList, categories, brands, specs);
     }
 
     private QueryBuilder buildBoolQueryBuilder(RequestSearch requestSearch) {
@@ -254,16 +255,16 @@ public class SearchService {
             } else if (StringUtils.equals("分类", key)) {
                 // 如果是“分类”，过滤字段名：cid3
                 key = "cid3";
-            }else {
+            } else {
                 // 如果是规格参数名，过滤字段名：specs.key.keyword
                 key = "specs." + key + ".keyword";
             }
-            boolQueryBuilder.filter(QueryBuilders.termQuery(key,value));
+            boolQueryBuilder.filter(QueryBuilders.termQuery(key, value));
         });
         return boolQueryBuilder;
     }
 
-    private List<Map<String,Object>> parseParamAgg(Long cid, QueryBuilder boolQueryBuilder) {
+    private List<Map<String, Object>> parseParamAgg(Long cid, QueryBuilder boolQueryBuilder) {
         try {
             List<Map<String, Object>> specs = new ArrayList<>();
             //1.创建自定义查询构建器
@@ -271,7 +272,7 @@ public class SearchService {
             //2.基于基本查询条件，聚合规格参数
             queryBuilder.withQuery(boolQueryBuilder);
             //3.查询规格参数
-            List<SpecParam> params = specificationClient.querySpecParams(null, cid, true,null);
+            List<SpecParam> params = specificationClient.querySpecParams(null, cid, null, true);
             //4.添加聚合
             params.forEach(param -> {
                 String name = param.getName();
@@ -301,6 +302,7 @@ public class SearchService {
 
     /**
      * 解析brandAggregate
+     *
      * @param terms
      * @return
      */
@@ -313,13 +315,14 @@ public class SearchService {
             List<Brand> brands = brandClient.queryBrands(ids);
             return brands;
         } catch (Exception e) {
-            log.error("[品牌服务异常]",e.getMessage());
+            log.error("[品牌服务异常]", e.getMessage());
             return null;
         }
     }
 
     /**
      * 解析categoriesAggregate
+     *
      * @param terms
      * @return
      */
@@ -338,13 +341,14 @@ public class SearchService {
             });
             return categories;
         } catch (Exception e) {
-            log.error("[分类服务异常]",e.getMessage());
+            log.error("[分类服务异常]", e.getMessage());
             return null;
         }
     }
 
     /**
      * 创建索引
+     *
      * @param id
      */
     public void createIndex(Long id) {
@@ -358,6 +362,7 @@ public class SearchService {
 
     /**
      * 删除所有
+     *
      * @param id
      */
     public void deleteIndex(Long id) {
